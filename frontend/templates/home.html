@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Messagely</h1>
+<div class="conversation">
+    {% for conversation in conversations %}
+    <div class="conversation-item" onclick="window.location='/chat/{{ conversation['id'] }}'">
+        {{ conversation['name'] }}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
