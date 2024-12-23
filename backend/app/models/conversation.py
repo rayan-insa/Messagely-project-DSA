@@ -7,9 +7,16 @@ class Conversation(Base):
     __tablename__ = "conversations"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=True)  # Optional for DMs
+    name = Column(String(100), nullable=True, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    is_group = Column(Integer, default=0)  # 0 for DMs, 1 for Group Chats
+    user1_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user2_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+    user1 = relationship("User", foreign_keys=[user1_id])
+    user2 = relationship("User", foreign_keys=[user2_id])
+    message_conversations = relationship(
+        "Message", back_populates="conversation", lazy="select"
+    )
 
     def __repr__(self):
-        return f"<Conversation(id={self.id}, is_group={self.is_group})>"
+        return f"<Conversation(id={self.id})>"

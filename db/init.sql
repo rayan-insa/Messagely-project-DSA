@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS conversations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_group BOOLEAN DEFAULT FALSE
+    -- is_group BOOLEAN DEFAULT FALSE
 );
 
 -- Create the `messages` table
@@ -51,13 +51,13 @@ INSERT INTO users (username, email) VALUES
 ('bob', 'bob@example.com'),
 ('carol', 'carol@example.com');
 
--- Insert a direct message conversation
-INSERT INTO conversations (name, is_group) VALUES
-('Alice and Bob', FALSE);
+-- -- Insert a direct message conversation
+-- INSERT INTO conversations (name, is_group) VALUES
+-- ('Alice and Bob', FALSE);
 
--- Insert a group chat
-INSERT INTO conversations (name, is_group) VALUES
-('Friends Group', TRUE);
+-- -- Insert a group chat
+-- INSERT INTO conversations (name, is_group) VALUES
+-- ('Friends Group', TRUE);
 
 -- Insert group chat details in the groupchats table
 INSERT INTO groupchats (name, admin_id) VALUES

@@ -21,17 +21,17 @@ body {
     padding: 10px;
 }
 
-.conversation-item {
+.chat-item {
     cursor: pointer;
     padding: 10px;
     border-bottom: 1px solid #eee;
 }
 
-.conversation-item:last-child {
+.chat-item:last-child {
     border-bottom: none;
 }
 
-.conversation-item:hover {
+.chat-item:hover {
     background-color: #f0f0f0;
 }
 
@@ -93,4 +93,23 @@ body {
     padding: 10px 20px;
     border-radius: 0 8px 8px 0;
     cursor: pointer;
+}
+
+.delete-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    color: red;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    color: darkred;
+    transform: scale(1.2);
 }
