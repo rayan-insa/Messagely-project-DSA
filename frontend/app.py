@@ -3,7 +3,7 @@ from utils.api import *
 import requests
 
 app = Flask(__name__)
-# app.secret_key = ""
+app.secret_key = "very_secret"
 
 
 @app.route("/")

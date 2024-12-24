@@ -1,11 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Messagely</h1>
+<h1 class="main-title">Messagely</h1>
 <div>
     <h1>Welcome, {{ current_user }}</h1>
-    <h3>Create a Group Chat</h3>
-    <form action="/groupchats/create" method="post">
+
+    <div class="actions">
+        <button id="toggle-groupchat-form" class="btn btn-primary">Create Group Chat</button>
+        <button id="toggle-conversation-form" class="btn btn-secondary">Create Conversation</button>
+    </div>
+
+    <!-- Group Chat Form -->
+    <form id="groupchat-form" class="hidden" action="/groupchats/create" method="post">
         <div class="form-group">
             <label for="group-name">Group Name (required):</label>
             <input type="text" id="group-name" name="name" placeholder="Enter group name" required>
@@ -16,42 +22,35 @@
         </div>
         <button type="submit" class="btn btn-primary">Create Group</button>
     </form>
-    <h2>Create a Conversation</h2>
-    <form action="/conversations/create" method="post">
-        <label for="username">Username to chat with:</label>
-        <input type="text" id="username" name="username" placeholder="Enter a username" required>
 
-        <label for="name">Conversation Name (optional):</label>
-        <input type="text" id="name" name="name" placeholder="Conversation Name">
-
-        <button type="submit">Create Conversation</button>
+    <!-- Conversation Form -->
+    <form id="conversation-form" class="hidden" action="/conversations/create" method="post">
+        <div class="form-group">
+            <label for="username">Username to chat with:</label>
+            <input type="text" id="username" name="username" placeholder="Enter a username" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Conversation Name (optional):</label>
+            <input type="text" id="name" name="name" placeholder="Conversation Name">
+        </div>
+        <button type="submit" class="btn btn-secondary">Create Conversation</button>
     </form>
 </div>
+
 <div class="conversation">
     {% for conversation in conversations %}
     <div
         class="chat-item"
-        onclick="window.location='/messages/conversation/{{ conversation['id'] }}'"
-    >
+        onclick="window.location='/messages/conversation/{{ conversation['id'] }}'">
         {{ conversation['name'] }}
     </div>
     {% endfor %}
     {% for groupchat in groupchats %}
     <div 
         class="chat-item" 
-        onclick="window.location='/messages/groupchat/{{ groupchat['id'] }}'"
-    >
+        onclick="window.location='/messages/groupchat/{{ groupchat['id'] }}'">
         {{ groupchat['name'] }}
     </div>
     {% endfor %}
 </div>
-<script>
-    // Check for flashed messages
-    const flashedMessage = "{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}";
-    const messageType = "{{ 'success' if 'success' in get_flashed_messages(category_filter=['success']) else 'error' }}";
-
-    if (flashedMessage) {
-        alert(flashedMessage);
-    }
-</script>
 {% endblock %}

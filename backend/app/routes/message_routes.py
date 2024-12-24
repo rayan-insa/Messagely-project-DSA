@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from typing import List
 
 from app.models.user import User
+from app.kafka.kafka_utils import *
 
 
 class MessageCreate(BaseModel):
@@ -28,7 +29,6 @@ class MessageResponse(BaseModel):
     class Config:
         orm_mode = True
 
-
 router = APIRouter()
 
 
@@ -45,7 +45,18 @@ async def create_message(message: MessageCreate, db: AsyncSession = Depends(get_
     senderID = new_message.sender_id
     sender = await db.get(User, senderID)
     await db.refresh(sender)
+    
+    # Prepare the message data to be sent to Kafka
+    message_data = {
+        "sender_id": new_message.sender_id,
+        "content": new_message.content,
+        "conversation_id": new_message.conversation_id,
+        "sender_username": sender.username,
+        "groupchat_id": message.groupchat_id,
+    }
 
+    # Send the message to Kafka
+    # send_message_to_kafka(message_data)
     return MessageResponse(
         id=new_message.id,
         content=new_message.content,

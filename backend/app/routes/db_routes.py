@@ -64,126 +64,160 @@ async def add_test_data(db: AsyncSession = Depends(get_db)):
         # Recreate tables
         async with async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        # Create users
-        user1 = User(username="user1", email="user1@example.com")
-        user2 = User(username="user2", email="user2@example.com")
-        user3 = User(username="user3", email="user3@example.com")
-        user4 = User(username="user4", email="user4@example.com")
-        user5 = User(username="user5", email="user5@example.com")
-        user6 = User(username="user6", email="user6@example.com")
-        user7 = User(username="user7", email="user7@example.com")
-        user8 = User(username="user8", email="user8@example.com")
-        user9 = User(username="user9", email="user9@example.com")
 
-        db.add_all([user1, user2, user3, user4, user5, user6, user7, user8, user9])
+        # Create users
+        users = [
+            User(username="alice", email="alice@example.com"),
+            User(username="bob", email="bob@example.com"),
+            User(username="charlie", email="charlie@example.com"),
+            User(username="diana", email="diana@example.com"),
+            User(username="edward", email="edward@example.com"),
+            User(username="fiona", email="fiona@example.com"),
+            User(username="george", email="george@example.com"),
+            User(username="hannah", email="hannah@example.com"),
+            User(username="ivan", email="ivan@example.com"),
+            User(username="julia", email="julia@example.com"),
+        ]
+
+        db.add_all(users)
         await db.commit()
 
-        await db.refresh(user1)
-        await db.refresh(user2)
-        await db.refresh(user3)
-        await db.refresh(user4)
-        await db.refresh(user5)
-        await db.refresh(user6)
-        await db.refresh(user7)
-        await db.refresh(user8)
-        await db.refresh(user9)
+        for user in users:
+            await db.refresh(user)
 
         # Create conversations
-        conversation1 = Conversation(
-            name="conv 1", user1_id=user1.id, user2_id=user2.id
-        )
-        conversation2 = Conversation(
-            name="conv 2", user1_id=user3.id, user2_id=user4.id
-        )
-
-        db.add_all([conversation1, conversation2])
-        await db.commit()
-
-        await db.refresh(conversation1)
-        await db.refresh(conversation2)
-
-        await db.refresh(user1)
-        await db.refresh(user2)
-        await db.refresh(user3)
-        await db.refresh(user4)
-
-        # Create messages for conversations
-        messages = [
-            Message(
-                conversation=conversation1,
-                sender_id=user1.id,
-                content="Hello from user1 to user2",
+        conversations = [
+            Conversation(
+                name="Alice & Bob", user1_id=users[0].id, user2_id=users[1].id
             ),
-            Message(
-                conversation=conversation1,
-                sender_id=user2.id,
-                content="Hello from user2 to user1",
+            Conversation(
+                name="Charlie & Diana", user1_id=users[2].id, user2_id=users[3].id
             ),
-            Message(
-                conversation=conversation2,
-                sender_id=user3.id,
-                content="Hello from user3 to user4",
+            Conversation(
+                name="Fiona & George", user1_id=users[5].id, user2_id=users[6].id
             ),
-            Message(
-                conversation=conversation2,
-                sender_id=user4.id,
-                content="Hello from user4 to user3",
+            Conversation(
+                name="Hannah & Ivan", user1_id=users[7].id, user2_id=users[8].id
             ),
         ]
 
-        db.add_all(messages)
+        db.add_all(conversations)
         await db.commit()
 
-        await db.refresh(user1)
-        await db.refresh(user2)
-        await db.refresh(user3)
-        await db.refresh(user4)
+        for conversation in conversations:
+            await db.refresh(conversation)
+
+        for user in users:
+            await db.refresh(user)
+
+        # Create messages for conversations
+        conversation_messages = [
+            Message(
+                conversation=conversations[0],
+                sender_id=users[0].id,
+                content="Hi Bob, how are you?",
+            ),
+            Message(
+                conversation=conversations[0],
+                sender_id=users[1].id,
+                content="I'm good, Alice! How about you?",
+            ),
+            Message(
+                conversation=conversations[1],
+                sender_id=users[2].id,
+                content="Hey Diana, did you finish the report?",
+            ),
+            Message(
+                conversation=conversations[1],
+                sender_id=users[3].id,
+                content="Yes, Charlie. Sending it now.",
+            ),
+            Message(
+                conversation=conversations[2],
+                sender_id=users[5].id,
+                content="George, ready for the meeting?",
+            ),
+            Message(
+                conversation=conversations[2],
+                sender_id=users[6].id,
+                content="Absolutely, Fiona. Let's nail this!",
+            ),
+            Message(
+                conversation=conversations[3],
+                sender_id=users[7].id,
+                content="Ivan, can you review my code?",
+            ),
+            Message(
+                conversation=conversations[3],
+                sender_id=users[8].id,
+                content="Sure, Hannah. Send it over.",
+            ),
+        ]
+
+        db.add_all(conversation_messages)
+        await db.commit()
+
+        for user in users:
+            await db.refresh(user)
 
         # Create groupchats
-        groupchat1 = GroupChat(name="Group Chat 1", admin_id=user1.id)
-        groupchat2 = GroupChat(name="Group Chat 2", admin_id=user2.id)
-        groupchat1.members.append(user1)
-        groupchat1.members.append(user2)
-        groupchat1.members.append(user3)
+        groupchats = [
+            GroupChat(name="Project Team A", admin_id=users[0].id),
+            GroupChat(name="Weekend Hikers", admin_id=users[3].id),
+            GroupChat(name="Music Lovers", admin_id=users[6].id),
+        ]
 
-        db.add_all([groupchat1, groupchat2])
+        groupchats[0].members.extend([users[0], users[1], users[2], users[3]])
+        groupchats[1].members.extend([users[3], users[4], users[5], users[6]])
+        groupchats[2].members.extend([users[6], users[7], users[8], users[9]])
+
+        db.add_all(groupchats)
         await db.commit()
 
-        await db.refresh(groupchat1)
-        await db.refresh(groupchat2)
-
-        await db.refresh(user1)
-        await db.refresh(user2)
-        await db.refresh(user3)
-        await db.refresh(user4)
+        for groupchat in groupchats:
+            await db.refresh(groupchat)
+            
+        for user in users:
+            await db.refresh(user)
 
         # Create messages for groupchats
         group_messages = [
             Message(
-                groupchat=groupchat1,
-                sender_id=user1.id,
-                content="Hello from user1 to groupchat1",
+                groupchat=groupchats[0],
+                sender_id=users[0].id,
+                content="Team, let's sync up tomorrow at 10 AM.",
             ),
             Message(
-                groupchat=groupchat1,
-                sender_id=user2.id,
-                content="Hello from user2 to groupchat1",
+                groupchat=groupchats[0],
+                sender_id=users[2].id,
+                content="Got it, Alice. See you then.",
             ),
             Message(
-                groupchat=groupchat2,
-                sender_id=user3.id,
-                content="Hello from user3 to groupchat2",
+                groupchat=groupchats[1],
+                sender_id=users[4].id,
+                content="Who's up for a hike this Saturday?",
             ),
             Message(
-                groupchat=groupchat2,
-                sender_id=user4.id,
-                content="Hello from user4 to groupchat2",
+                groupchat=groupchats[1],
+                sender_id=users[5].id,
+                content="Count me in, Diana!",
+            ),
+            Message(
+                groupchat=groupchats[2],
+                sender_id=users[7].id,
+                content="Check out this new song I found!",
+            ),
+            Message(
+                groupchat=groupchats[2],
+                sender_id=users[9].id,
+                content="Awesome, Julia! Sharing my playlist too.",
             ),
         ]
+
         db.add_all(group_messages)
         await db.commit()
 
-        return {"message": "Test data added successfully"}
+        return {"message": "Demo-friendly test data added successfully"}
     except Exception as e:
         print(f"Error adding test data: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error adding test data: {str(e)}")
